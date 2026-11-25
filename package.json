@@ -1,0 +1,10 @@
+{
+  "name": "dream-decoder",
+  "version": "1.0.0",
+  "description": "月影解夢所 — 夢境解碼與超現實視覺化圖卡生成網頁工具",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}

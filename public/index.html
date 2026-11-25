@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>月影解夢所 · Oneiric Oracle | 夢境解碼與超現實視覺化</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="cosmos-backdrop" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-sigil">☽</span>
+      <div>
+        <div class="brand-name">月影解夢所 <span class="brand-en">ONEIRIC ORACLE</span></div>
+        <div class="brand-tagline">潛意識星盤占卜 × 超現實夢境顯影 × 神諭圖卡工坊</div>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <button id="engineStatusBtn" class="pill-btn" type="button" title="設定 AI 解夢引擎與 Gemini API Key">
+        <span class="status-dot"></span>
+        <span id="engineStatusText">星象演算模式（免金鑰）</span>
+      </button>
+      <button id="historyBtn" class="pill-btn secondary" type="button">
+        📜 夢境檔案館 (<span id="historyCount">0</span>)
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Left / Top Altar: Dream Input -->
+    <section class="altar-card glass-panel">
+      <div class="section-header">
+        <span class="eyebrow">STEP 01 · 夢境獻祭祭壇</span>
+        <h1>告訴大占卜師，你昨晚夢見了什麼？</h1>
+        <p class="subtitle">越離奇、越荒謬、越支離破碎越好。阿爾卡納·莫測大師會用百分之百的莊重，為你解開宇宙的冷笑話與今日運勢。</p>
+      </div>
+
+      <div class="sample-row">
+        <span class="sample-label">靈感籤筒：</span>
+        <button class="sample-chip" type="button" data-dream="夢到會講粵語的金魚在7-11買關東煮，還問我要不要加辣，結果櫃檯店員是一隻戴墨鏡的橘貓">🐟 金魚買關東煮</button>
+        <button class="sample-chip" type="button" data-dream="夢到牙齒全部掉光變成一串發光的珍珠項鍊，正要收進口袋時被一群穿著西裝的烏鴉搶走飛去台北101">🦷 珍珠牙齒與烏鴉</button>
+        <button class="sample-chip" type="button" data-dream="夢到我在無限往上延伸的捷運手扶梯上狂奔怕遲到，結果盡頭只有一台會一直嘆氣的神秘販賣機">🚇 無限手扶梯販賣機</button>
+        <button class="sample-chip" type="button" data-dream="夢到在紫色的雲海上漂浮，手錶突然融化成起司，天空開了一隻巨大的眼睛盯著我的期末報告">⏳ 融化時鐘與雲海之眼</button>
+      </div>
+
+      <div class="input-wrap">
+        <textarea
+          id="dreamInput"
+          rows="4"
+          maxlength="1200"
+          placeholder="例如：昨晚夢到我在海底的便利商店挑微波便當，老闆是一隻會說英文的章魚，結帳時發現我的錢包裡全是會發光的蝴蝶…"
+        ></textarea>
+        <div class="input-meta">
+          <span id="charCount">0 / 1200</span>
+        </div>
+      </div>
+
+      <div class="controls-grid">
+        <div class="control-group">
+          <label class="control-label">夢境氛圍基調</label>
+          <div id="moodPills" class="chip-group">
+            <button type="button" class="select-chip active" data-mood="荒誕爆笑">🎭 荒誕爆笑</button>
+            <button type="button" class="select-chip" data-mood="神秘懸疑">👁️ 神秘懸疑</button>
+            <button type="button" class="select-chip" data-mood="日常魔幻">🏪 日常魔幻</button>
+            <button type="button" class="select-chip" data-mood="懷舊惆悵">🕯️ 懷舊惆悵</button>
+            <button type="button" class="select-chip" data-mood="史詩奇幻">⚔️ 史詩奇幻</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">超現實插畫風格</label>
+          <div id="artStylePills" class="chip-group">
+            <button type="button" class="select-chip active" data-style="dali">⏳ 達利融化夢境</button>
+            <button type="button" class="select-chip" data-style="magritte">🎩 馬格利特超現實</button>
+            <button type="button" class="select-chip" data-style="ukiyoe">🌊 浮世繪星辰</button>
+            <button type="button" class="select-chip" data-style="tarot">🔮 銅版畫塔羅</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button id="decodeBtn" class="primary-btn" type="button">
+          <span class="btn-glow"></span>
+          ✨ 啟動星盤解夢與超現實顯影
+        </button>
+        <span id="statusMessage" class="status-msg" role="status" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <!-- Result Workspace -->
+    <section id="resultSection" class="result-workspace hidden">
+      <div class="workspace-grid">
+        <!-- Column 1: Mystical Reading + Art -->
+        <div class="reading-column">
+          <!-- Surreal Illustration Showcase -->
+          <article class="glass-panel art-panel">
+            <div class="panel-top">
+              <div>
+                <span class="eyebrow">STEP 02 · 超現實夢境顯影</span>
+                <h2 id="artPanelTitle">潛意識顯影畫作</h2>
+              </div>
+              <div class="panel-actions">
+                <button id="regenArtBtn" class="mini-btn" type="button">🎨 重新顯影</button>
+                <button id="downloadArtBtn" class="mini-btn" type="button">⬇ 下載純插畫</button>
+              </div>
+            </div>
+
+            <div class="art-frame">
+              <canvas id="artCanvas" width="900" height="900" class="hidden"></canvas>
+              <img id="artImage" alt="超現實夢境插畫" class="hidden" />
+              <div id="artBadge" class="art-badge">星象 Canvas 顯影</div>
+            </div>
+            <p id="artNotice" class="art-notice hidden"></p>
+          </article>
+
+          <!-- Fortune Teller Reading -->
+          <article class="glass-panel reading-panel">
+            <div class="reading-header">
+              <span id="arcanaCode" class="arcana-tag">ARCANA NO. 042</span>
+              <span id="readingModeBadge" class="mode-tag">星象演算</span>
+            </div>
+            <h2 id="dreamTitle" class="reading-title">夢境神諭標題</h2>
+            <p id="dreamSubtitle" class="reading-subtitle">星象副標題</p>
+
+            <div id="interpretationBody" class="interpretation-text"></div>
+
+            <div class="symbols-section">
+              <h3>夢境象徵物解析</h3>
+              <div id="symbolsGrid" class="symbols-grid"></div>
+            </div>
+
+            <div class="fortune-section">
+              <h3>今日運勢處方籤</h3>
+              <div id="fortuneMeters" class="meters-grid"></div>
+              <p id="fortuneSummary" class="fortune-summary"></p>
+
+              <div class="taboo-grid">
+                <div class="taboo-box do">
+                  <span class="taboo-label">✦ 今日宜</span>
+                  <p id="doThing"></p>
+                </div>
+                <div class="taboo-box dont">
+                  <span class="taboo-label">✕ 今日忌</span>
+                  <p id="dontThing"></p>
+                </div>
+              </div>
+
+              <div class="lucky-strip">
+                <div><span>開運小物</span><strong id="luckyItem"></strong></div>
+                <div><span>開運色</span><strong id="luckyColor"></strong></div>
+                <div><span>幸運數字</span><strong id="luckyNumber"></strong></div>
+              </div>
+              <blockquote id="mantraQuote" class="mantra-quote"></blockquote>
+            </div>
+          </article>
+        </div>
+
+        <!-- Column 2: Oracle Card Studio -->
+        <aside class="studio-column">
+          <div class="glass-panel studio-panel sticky-studio">
+            <div class="panel-top">
+              <div>
+                <span class="eyebrow">STEP 03 · 神諭圖卡工坊</span>
+                <h2>排版預覽與下載</h2>
+              </div>
+            </div>
+
+            <div class="studio-controls">
+              <div class="template-tabs" id="templateTabs">
+                <button type="button" class="tab-btn active" data-template="tarot">🔮 神秘塔羅牌</button>
+                <button type="button" class="tab-btn" data-template="museum">🖼️ 美術館海報</button>
+                <button type="button" class="tab-btn" data-template="gazette">📰 神秘學日報</button>
+              </div>
+
+              <label class="toggle-row">
+                <input type="checkbox" id="showDreamToggle" checked />
+                <span>在圖卡上印出我的夢境原句</span>
+              </label>
+            </div>
+
+            <div class="card-preview-frame">
+              <canvas id="cardCanvas" width="1080" height="1660"></canvas>
+            </div>
+
+            <button id="downloadCardBtn" class="primary-btn download-cta" type="button">
+              ✨ 下載高清神諭圖卡 (.png)
+            </button>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings Modal -->
+  <dialog id="settingsModal" class="modal">
+    <form method="dialog" class="modal-box glass-panel">
+      <div class="modal-header">
+        <h2>🔮 神諭引擎設定</h2>
+        <button id="closeSettingsBtn" class="icon-close" type="button" aria-label="關閉">✕</button>
+      </div>
+      <p class="modal-desc">
+        預設使用「星象演算模式」即可免費體驗完整解夢、超現實插畫與圖卡下載。若填入你自己的 Gemini API Key，將升級為即時 AI 深度客製解夢與 AI 圖像生成。
+      </p>
+
+      <div class="form-field">
+        <label for="engineModeSelect">運作模式</label>
+        <select id="engineModeSelect">
+          <option value="auto">自動（有金鑰時用 Gemini，否則用星象演算）</option>
+          <option value="local">強制使用星象演算模式（免金鑰）</option>
+          <option value="gemini">強制使用 Gemini AI 即時模式</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="apiKeyInput">Gemini API Key（選填，僅儲存在你的瀏覽器 localStorage）</label>
+        <input id="apiKeyInput" type="password" placeholder="AIza..." autocomplete="off" />
+        <small id="serverKeyHint" class="field-hint"></small>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-field">
+          <label for="textModelInput">解夢文字模型</label>
+          <input id="textModelInput" type="text" value="gemini-2.5-flash" />
+        </div>
+        <div class="form-field">
+          <label for="imageModelInput">超現實繪圖模型</label>
+          <input id="imageModelInput" type="text" value="gemini-2.5-flash-image" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="clearKeyBtn" type="button" class="mini-btn">清除本地金鑰</button>
+        <button id="saveSettingsBtn" type="button" class="primary-btn small">儲存設定</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- History Drawer Modal -->
+  <dialog id="historyModal" class="modal">
+    <div class="modal-box glass-panel wide">
+      <div class="modal-header">
+        <h2>📜 夢境檔案館</h2>
+        <button id="closeHistoryBtn" class="icon-close" type="button" aria-label="關閉">✕</button>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </dialog>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
